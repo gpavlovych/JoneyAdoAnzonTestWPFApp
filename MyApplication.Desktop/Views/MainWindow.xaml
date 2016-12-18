@@ -1,0 +1,121 @@
+﻿<Window x:Class="MyApplication.Desktop.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:localvm="clr-namespace:MyApplication.Desktop.ViewModels"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:mvvm="clr-namespace:Microsoft.Practices.Prism.Mvvm;assembly=Microsoft.Practices.Prism.Mvvm.Desktop"
+        xmlns:prop="clr-namespace:MyApplication.Desktop.Properties"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="560" MinWidth="560"
+        mvvm:ViewModelLocator.AutoWireViewModel="True">
+    <Window.Resources>
+        <localvm:EnumBooleanConverter x:Key="enumBooleanConverter"/>
+        <Style x:Key="headerStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Margin" Value="5"></Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="15" Width="510">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ListView Grid.Row="0" ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}">
+            <ListView.Resources>
+                <DataTemplate x:Key="RowHeaderTTC" DataType="{x:Type localvm:TTCRowViewModel}">
+                    <TextBlock Text="{x:Static prop:Resources.TTCRowHeader}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="RowHeaderTTbC" DataType="{x:Type localvm:TTbCRowViewModel}">
+                    <TextBlock Text="{x:Static prop:Resources.TTbCRowHeader}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="RowHeaderT3Rb" DataType="{x:Type localvm:T3RbRowViewModel}">
+                    <TextBlock Text="{x:Static prop:Resources.T3RbRowHeader}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column1TTC" DataType="{x:Type localvm:TTCRowViewModel}">
+                    <TextBlock Text="{x:Static prop:Resources.Door}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column1TTbC" DataType="{x:Type localvm:TTbCRowViewModel}">
+                    <TextBlock Text="{x:Static prop:Resources.AlarmClock}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column1T3Rb" DataType="{x:Type localvm:T3RbRowViewModel}">
+                    <TextBlock Text="{x:Static prop:Resources.SecurityLevel}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column2TTC" DataType="{x:Type localvm:TTCRowViewModel}">
+                    <TextBlock Text="{x:Static prop:Resources.FrontDoor}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column2TTbC" DataType="{x:Type localvm:TTbCRowViewModel}">
+                    <TextBox Text="{Binding Text}" MaxLength="5" Width="50"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column2T3Rb" DataType="{x:Type localvm:T3RbRowViewModel}">
+                    <TextBlock Text=""/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column3TTC" DataType="{x:Type localvm:TTCRowViewModel}">
+                    <CheckBox IsChecked="{Binding Selected}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column3TTbC" DataType="{x:Type localvm:TTbCRowViewModel}">
+                    <CheckBox IsChecked="{Binding Selected}"/>
+                </DataTemplate>
+                <DataTemplate x:Key="Column3T3Rb" DataType="{x:Type localvm:T3RbRowViewModel}">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value1}"></RadioButton>
+                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value2}"></RadioButton>
+                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value3}"></RadioButton>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="{x:Static prop:Resources.RowHeader}" HeaderContainerStyle="{StaticResource headerStyle}" Width="70">
+                        <GridViewColumn.CellTemplateSelector>
+                            <localvm:RowViewModelTemplateSelector TTCDataTemplate="{StaticResource RowHeaderTTC}" TTbCDataTemplate="{StaticResource RowHeaderTTbC}" T3RbDataTemplate="{StaticResource RowHeaderT3Rb}" />
+                        </GridViewColumn.CellTemplateSelector>
+                    </GridViewColumn>
+                    <GridViewColumn Header="{x:Static prop:Resources.Column1Header}" Width="150">
+                        <GridViewColumn.CellTemplateSelector>
+                            <localvm:RowViewModelTemplateSelector TTCDataTemplate="{StaticResource Column1TTC}" TTbCDataTemplate="{StaticResource Column1TTbC}" T3RbDataTemplate="{StaticResource Column1T3Rb}" />
+                        </GridViewColumn.CellTemplateSelector>
+                    </GridViewColumn>
+                    <GridViewColumn Header="{x:Static prop:Resources.Column2Header}" Width="150">
+                        <GridViewColumn.CellTemplateSelector>
+                            <localvm:RowViewModelTemplateSelector TTCDataTemplate="{StaticResource Column2TTC}" TTbCDataTemplate="{StaticResource Column2TTbC}" T3RbDataTemplate="{StaticResource Column2T3Rb}" />
+                        </GridViewColumn.CellTemplateSelector>
+                    </GridViewColumn>
+                    <GridViewColumn Header="{x:Static prop:Resources.Column3Header}" Width="110">
+                        <GridViewColumn.CellTemplateSelector>
+                            <localvm:RowViewModelTemplateSelector TTCDataTemplate="{StaticResource Column3TTC}" TTbCDataTemplate="{StaticResource Column3TTbC}" T3RbDataTemplate="{StaticResource Column3T3Rb}" />
+                        </GridViewColumn.CellTemplateSelector>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <StackPanel Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Button Grid.Column="0" Command="{Binding AddNewTTCRowCommand}" Content="{x:Static prop:Resources.AddTTcRowButton}"></Button>
+                <Button Grid.Column="1" Command="{Binding AddNewTTbCRowCommand}" Content="{x:Static prop:Resources.AddTTbCRowButton}"></Button>
+                <Button Grid.Column="2" Command="{Binding AddNewT3RbRowCommand}" Content="{x:Static prop:Resources.AddT3RbRowButton}"></Button>
+                <Button Grid.Column="3" Command="{Binding DeleteRowCommand}" CommandParameter="{Binding SelectedRow}" Content="{x:Static prop:Resources.DeleteRowButton}"></Button>
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="{x:Static prop:Resources.TDescription}"></TextBlock>
+                <TextBlock Grid.Row="2" Grid.ColumnSpan="4" Text="{x:Static prop:Resources.CDescription}"></TextBlock>
+                <TextBlock Grid.Row="3" Grid.ColumnSpan="4" Text="{x:Static prop:Resources.TbDescription}"></TextBlock>
+                <TextBlock Grid.Row="4" Grid.ColumnSpan="4" Text="{x:Static prop:Resources.RbDescription}"></TextBlock>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>
