@@ -8,8 +8,14 @@
         xmlns:mvvm="clr-namespace:Microsoft.Practices.Prism.Mvvm;assembly=Microsoft.Practices.Prism.Mvvm.Desktop"
         xmlns:prop="clr-namespace:MyApplication.Desktop.Properties"
         mc:Ignorable="d"
+        x:Name="ParentWindow"
         Title="MainWindow" Height="350" Width="560" MinWidth="560"
         mvvm:ViewModelLocator.AutoWireViewModel="True">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadCommand}"></i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Window.Resources>
         <localvm:EnumBooleanConverter x:Key="enumBooleanConverter"/>
         <Style x:Key="headerStyle" TargetType="{x:Type GridViewColumnHeader}">
@@ -48,22 +54,58 @@
                     <TextBlock Text="{x:Static prop:Resources.FrontDoor}"/>
                 </DataTemplate>
                 <DataTemplate x:Key="Column2TTbC" DataType="{x:Type localvm:TTbCRowViewModel}">
-                    <TextBox Text="{Binding Text}" MaxLength="5" Width="50"/>
+                    <TextBox Text="{Binding Text}" MaxLength="5" Width="50">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="LostFocus">
+                                <i:InvokeCommandAction Command="{Binding SaveCommand}"></i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
                 </DataTemplate>
                 <DataTemplate x:Key="Column2T3Rb" DataType="{x:Type localvm:T3RbRowViewModel}">
                     <TextBlock Text=""/>
                 </DataTemplate>
                 <DataTemplate x:Key="Column3TTC" DataType="{x:Type localvm:TTCRowViewModel}">
-                    <CheckBox IsChecked="{Binding Selected}"/>
+                    <CheckBox IsChecked="{Binding Selected}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Checked">
+                                <i:InvokeCommandAction Command="{Binding SaveCommand}"></i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </CheckBox>
                 </DataTemplate>
                 <DataTemplate x:Key="Column3TTbC" DataType="{x:Type localvm:TTbCRowViewModel}">
-                    <CheckBox IsChecked="{Binding Selected}"/>
+                    <CheckBox IsChecked="{Binding Selected}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Checked">
+                                <i:InvokeCommandAction Command="{Binding SaveCommand}"></i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </CheckBox>
                 </DataTemplate>
                 <DataTemplate x:Key="Column3T3Rb" DataType="{x:Type localvm:T3RbRowViewModel}">
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value1}"></RadioButton>
-                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value2}"></RadioButton>
-                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value3}"></RadioButton>
+                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value1}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <i:InvokeCommandAction Command="{Binding SaveCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value2}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <i:InvokeCommandAction Command="{Binding SaveCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
+                        <RadioButton IsChecked="{Binding State, Converter={StaticResource enumBooleanConverter}, ConverterParameter=Value3}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Checked">
+                                    <i:InvokeCommandAction Command="{Binding SaveCommand}"></i:InvokeCommandAction>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </RadioButton>
                     </StackPanel>
                 </DataTemplate>
             </ListView.Resources>

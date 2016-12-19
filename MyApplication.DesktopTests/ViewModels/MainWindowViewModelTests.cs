@@ -3,6 +3,8 @@ using FluentAssertions;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using MyApplication.Desktop.Data;
+using MyApplication.Desktop.Services;
 using MyApplication.Desktop.ViewModels;
 using Ploeh.AutoFixture;
 
@@ -26,11 +28,9 @@ namespace MyApplication.Desktop.Tests.ViewModels
         {
             //arrange
             var fixture = new TestAutoFixture();
-            var unityContainerMock = fixture.Freeze<Mock<IUnityContainer>>();
-            var returnedModel = fixture.Create<TTCRowViewModel>();
-            unityContainerMock.Setup(
-                    it => it.Resolve(typeof(TTCRowViewModel), It.IsAny<string>(), It.IsAny<ResolverOverride[]>()))
-                .Returns(returnedModel);
+            var serviceMock = fixture.Freeze<Mock<IRowService>>();
+            var row = fixture.Create<TTCRow>();
+            serviceMock.Setup(it => it.CreateTTC()).Returns(row);
             var target = fixture.Create<MainWindowViewModel>();
 
             //act
@@ -40,7 +40,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             //assert
             actualCanExecuteResult.Should().BeTrue();
             target.Rows.Count.Should().Be(1);
-            target.Rows.Single().Should().BeSameAs(returnedModel);
+            target.Rows.Single().Id.Should().Be(row.Id);
         }
 
         #endregion AddNewTTCRowCommand
@@ -55,11 +55,9 @@ namespace MyApplication.Desktop.Tests.ViewModels
         {
             //arrange
             var fixture = new TestAutoFixture();
-            var unityContainerMock = fixture.Freeze<Mock<IUnityContainer>>();
-            var returnedModel = fixture.Create<TTbCRowViewModel>();
-            unityContainerMock.Setup(
-                    it => it.Resolve(typeof(TTbCRowViewModel), It.IsAny<string>(), It.IsAny<ResolverOverride[]>()))
-                .Returns(returnedModel);
+            var serviceMock = fixture.Freeze<Mock<IRowService>>();
+            var row = fixture.Create<TTbCRow>();
+            serviceMock.Setup(it => it.CreateTTbC()).Returns(row);
             var target = fixture.Create<MainWindowViewModel>();
 
             //act
@@ -69,7 +67,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             //assert
             actualCanExecuteResult.Should().BeTrue();
             target.Rows.Count.Should().Be(1);
-            target.Rows.Single().Should().BeSameAs(returnedModel);
+            target.Rows.Single().Id.Should().Be(row.Id);
         }
 
         #endregion AddNewTTbCRowCommand
@@ -84,11 +82,9 @@ namespace MyApplication.Desktop.Tests.ViewModels
         {
             //arrange
             var fixture = new TestAutoFixture();
-            var unityContainerMock = fixture.Freeze<Mock<IUnityContainer>>();
-            var returnedModel = fixture.Create<T3RbRowViewModel>();
-            unityContainerMock.Setup(
-                    it => it.Resolve(typeof(T3RbRowViewModel), It.IsAny<string>(), It.IsAny<ResolverOverride[]>()))
-                .Returns(returnedModel);
+            var serviceMock= fixture.Freeze<Mock<IRowService>>();
+            var row = fixture.Create<T3RbRow>();
+            serviceMock.Setup(it => it.CreateT3Rb()).Returns(row);
             var target = fixture.Create<MainWindowViewModel>();
 
             //act
@@ -98,7 +94,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             //assert
             actualCanExecuteResult.Should().BeTrue();
             target.Rows.Count.Should().Be(1);
-            target.Rows.Single().Should().BeSameAs(returnedModel);
+            target.Rows.Single().Id.Should().Be(row.Id);
         }
 
         #endregion AddNewT3RbRowCommand

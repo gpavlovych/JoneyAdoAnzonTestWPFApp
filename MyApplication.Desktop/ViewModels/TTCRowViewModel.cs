@@ -1,3 +1,6 @@
+using MyApplication.Desktop.Data;
+using MyApplication.Desktop.Services;
+
 namespace MyApplication.Desktop.ViewModels
 {
     /// <summary>
@@ -7,9 +10,13 @@ namespace MyApplication.Desktop.ViewModels
     public class TTCRowViewModel : RowViewModelBase
     {
         /// <summary>
-        /// Backing field for <see cref="Selected"/> property.
+        /// Initializes a new instance of the <see cref="TTCRowViewModel" /> class.
         /// </summary>
-        private bool selected;
+        /// <param name="rowService">The row service.</param>
+        /// <param name="row">The row.</param>
+        public TTCRowViewModel(IRowService rowService, TTCRow row): base(rowService, row)
+        {
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="TTCRowViewModel"/> is selected.
@@ -19,10 +26,10 @@ namespace MyApplication.Desktop.ViewModels
         /// </value>
         public bool Selected
         {
-            get { return this.selected; }
+            get { return ((TTCRow)this.Row).Selected; }
             set
             {
-                this.selected = value;
+                ((TTCRow)this.Row).Selected = value;
                 this.OnPropertyChanged(() => this.Selected);
             }
         }

@@ -2,6 +2,9 @@
 using System.Windows;
 using Microsoft.Practices.Prism.Mvvm;
 using Microsoft.Practices.Unity;
+using MyApplication.Desktop.Data;
+using MyApplication.Desktop.Services;
+using MyApplication.Desktop.Services.Impl;
 using MyApplication.Desktop.ViewModels;
 
 namespace MyApplication.Desktop
@@ -18,6 +21,7 @@ namespace MyApplication.Desktop
         {
             base.OnStartup(e);
             IUnityContainer container = new UnityContainer();
+            container.RegisterType<IRowService, RowService>();
             container.RegisterType<TTCRowViewModel>();
             container.RegisterType<TTbCRowViewModel>();
             container.RegisterType<T3RbRowViewModel>();
