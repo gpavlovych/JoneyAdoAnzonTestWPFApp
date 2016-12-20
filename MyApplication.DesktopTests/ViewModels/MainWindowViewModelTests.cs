@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using MyApplication.Desktop.Data;
@@ -18,6 +19,54 @@ namespace MyApplication.Desktop.Tests.ViewModels
     {
         #region Test commands
 
+        #region LoadCommand
+
+        /// <summary>
+        /// Unit test for the <see cref="MainWindowViewModel.LoadCommand"/> Execute and CanExecute.
+        /// </summary>
+        [TestMethod]
+        public void LoadCommandTest()
+        {
+            //arrange
+            var fixture = new TestAutoFixture();
+            var serviceMock = fixture.Freeze<Mock<IRowService>>();
+            var rows = fixture.CreateMany<TTCRow>().ToList();
+            var expectedVms = rows.Select(row => new TTCRowViewModel(serviceMock.Object, row)).ToList();
+            var loading = true;
+            var running = true;
+            fixture.Inject<Func<Action,Task>>(action=>Task.Run(() =>
+            {
+                while (running)
+                {
+                    
+                }
+                action();
+                loading = false;
+            }));
+            fixture.Inject<Func<TTCRow, TTCRowViewModel>>(row=>new TTCRowViewModel(serviceMock.Object, row));
+            var context = fixture.Freeze<Mock<IContext>>();
+            context.Setup(it => it.Invoke(It.IsAny<Action>())).Callback<Action>(action => action());
+            serviceMock.Setup(it => it.LoadRows()).Returns(rows);
+            var target = fixture.Create<MainWindowViewModel>();
+
+            //act
+            var actualCanExecuteResult = target.LoadCommand.CanExecute(null);
+            target.LoadCommand.Execute(null);
+
+            //assert
+            target.IsLoading.Should().BeTrue();
+            target.Rows.Should().BeEmpty();
+            running = false;
+            while (loading)
+            {
+            }
+            actualCanExecuteResult.Should().BeTrue();
+            target.Rows.ShouldBeEquivalentTo(expectedVms);
+            target.IsLoading.Should().BeFalse();
+        }
+
+        #endregion LoadCommand
+
         #region AddNewTTCRowCommand
 
         /// <summary>
@@ -29,6 +78,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             //arrange
             var fixture = new TestAutoFixture();
             var serviceMock = fixture.Freeze<Mock<IRowService>>();
+            fixture.Inject<Func<TTCRow, TTCRowViewModel>>(ttcrow => new TTCRowViewModel(serviceMock.Object, ttcrow));
             var row = fixture.Create<TTCRow>();
             serviceMock.Setup(it => it.CreateTTC()).Returns(row);
             var target = fixture.Create<MainWindowViewModel>();
@@ -56,6 +106,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             //arrange
             var fixture = new TestAutoFixture();
             var serviceMock = fixture.Freeze<Mock<IRowService>>();
+            fixture.Inject<Func<TTbCRow, TTbCRowViewModel>>(ttbcrow => new TTbCRowViewModel(serviceMock.Object, ttbcrow));
             var row = fixture.Create<TTbCRow>();
             serviceMock.Setup(it => it.CreateTTbC()).Returns(row);
             var target = fixture.Create<MainWindowViewModel>();
@@ -83,6 +134,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             //arrange
             var fixture = new TestAutoFixture();
             var serviceMock= fixture.Freeze<Mock<IRowService>>();
+            fixture.Inject<Func<T3RbRow, T3RbRowViewModel>>(t3rbrow => new T3RbRowViewModel(serviceMock.Object, t3rbrow));
             var row = fixture.Create<T3RbRow>();
             serviceMock.Setup(it => it.CreateT3Rb()).Returns(row);
             var target = fixture.Create<MainWindowViewModel>();
@@ -109,6 +161,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
         {
             //arrange
             var fixture = new TestAutoFixture();
+            var rowService = fixture.Freeze<Mock<IRowService>>();
             var deletedModel = fixture.Create<T3RbRowViewModel>();
             var target = fixture.Create<MainWindowViewModel>();
             target.Rows.Add(deletedModel);
@@ -120,6 +173,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             //assert
             actualCanExecuteResult.Should().BeTrue();
             target.Rows.Count.Should().Be(0);
+            rowService.Verify(it=>it.Delete(deletedModel.Id));
         }
 
         /// <summary>
@@ -130,6 +184,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
         {
             //arrange
             var fixture = new TestAutoFixture();
+            var rowService = fixture.Freeze<Mock<IRowService>>();
             var returnedModel = fixture.Create<T3RbRowViewModel>();
             var target = fixture.Create<MainWindowViewModel>();
             target.Rows.Add(returnedModel);
@@ -142,6 +197,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             actualCanExecuteResult.Should().BeTrue();
             target.Rows.Count.Should().Be(1);
             target.Rows.Single().Should().BeSameAs(returnedModel);
+            rowService.Verify(it => it.Delete(It.IsAny<Guid>()), Times.Never);
         }
 
         /// <summary>
@@ -152,6 +208,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
         {
             //arrange
             var fixture = new TestAutoFixture();
+            var rowService = fixture.Freeze<Mock<IRowService>>();
             var returnedModel = fixture.Create<T3RbRowViewModel>();
             var deletedModel = fixture.Create<T3RbRowViewModel>();
             var target = fixture.Create<MainWindowViewModel>();
@@ -165,6 +222,7 @@ namespace MyApplication.Desktop.Tests.ViewModels
             actualCanExecuteResult.Should().BeTrue();
             target.Rows.Count.Should().Be(1);
             target.Rows.Single().Should().BeSameAs(returnedModel);
+            rowService.Verify(it => it.Delete(It.IsAny<Guid>()), Times.Never);
         }
 
         #endregion DeleteRowCommand

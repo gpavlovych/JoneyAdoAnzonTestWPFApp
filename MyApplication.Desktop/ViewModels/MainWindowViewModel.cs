@@ -1,4 +1,6 @@
+using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Practices.Unity;
 using MyApplication.Desktop.Data;
@@ -12,73 +14,80 @@ namespace MyApplication.Desktop.ViewModels
     public class MainWindowViewModel : BindableBase
     {
         /// <summary>
-        /// The service
-        /// </summary>
-        private readonly IRowService service;
-
-        /// <summary>
         /// The backing field for the <see cref="SelectedRow"/> property.
         /// </summary>
         private RowViewModelBase selectedRow;
 
         /// <summary>
+        /// The backing field for the <see cref="IsLoading"/> property.
+        /// </summary>
+        private bool isLoading;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="MainWindowViewModel" /> class.
         /// </summary>
         /// <param name="container">The container.</param>
-        public MainWindowViewModel(IRowService service, IUnityContainer container)
+        public MainWindowViewModel(IRowService service, IContext context, Func<Action, Task> taskFactory, Func<TTCRow, TTCRowViewModel> ttcRowViewModelFactory, Func<TTbCRow, TTbCRowViewModel> ttbcRowViewModelFactory, Func<T3RbRow, T3RbRowViewModel> t3rbRowViewModelFactory)
         {
-            this.service = service;
+            this.IsLoading = false;
             this.Rows = new ObservableCollection<RowViewModelBase>();
 
             this.LoadCommand = new DelegateCommand(
-                () =>
+                async () =>
                 {
                     this.Rows.Clear();
-                    foreach (var row in this.service.LoadRows())
+                    this.IsLoading = true;
+                    await taskFactory(() =>
                     {
-                        var ttcRow = row as TTCRow;
-                        if (ttcRow != null)
+                        foreach (var row in service.LoadRows())
                         {
-                            this.Rows.Add(new TTCRowViewModel(this.service, ttcRow));
-                        }
+                            var ttcRow = row as TTCRow;
+                            if (ttcRow != null)
+                            {
+                                context.Invoke(()=>this.Rows.Add(ttcRowViewModelFactory(ttcRow)));
+                            }
 
-                        var ttbcRow = row as TTbCRow;
-                        if (ttbcRow != null)
-                        {
-                            this.Rows.Add(new TTbCRowViewModel(this.service, ttbcRow));
-                        }
+                            var ttbcRow = row as TTbCRow;
+                            if (ttbcRow != null)
+                            {
+                                context.Invoke(() => this.Rows.Add(ttbcRowViewModelFactory(ttbcRow)));
+                            }
 
-                        var t3RbRow = row as T3RbRow;
-                        if (t3RbRow != null)
-                        {
-                            this.Rows.Add(new T3RbRowViewModel(this.service, t3RbRow));
+                            var t3RbRow = row as T3RbRow;
+                            if (t3RbRow != null)
+                            {
+                                context.Invoke(() => this.Rows.Add(t3rbRowViewModelFactory(t3RbRow)));
+                            }
                         }
-                    }
+                        this.IsLoading = false;
+                    });
                 });
 
             this.AddNewTTCRowCommand = new DelegateCommand(
                 () =>
                 {
-                    this.Rows.Add(new TTCRowViewModel(this.service, this.service.CreateTTC()));
+                    this.Rows.Add(ttcRowViewModelFactory(service.CreateTTC()));
                 });
 
             this.AddNewTTbCRowCommand = new DelegateCommand(
                 () =>
                 {
-                    this.Rows.Add(new TTbCRowViewModel(this.service, this.service.CreateTTbC()));
+                    this.Rows.Add(ttbcRowViewModelFactory(service.CreateTTbC()));
                 });
 
             this.AddNewT3RbRowCommand = new DelegateCommand(
                 () =>
                 {
-                    this.Rows.Add(new T3RbRowViewModel(this.service, this.service.CreateT3Rb()));
+                    this.Rows.Add(t3rbRowViewModelFactory(service.CreateT3Rb()));
                 });
 
             this.DeleteRowCommand = new DelegateCommand<RowViewModelBase>(
                 row =>
                 {
-                    this.service.Delete(row.Id);
-                    this.Rows.Remove(row);
+                    if (this.Rows.Remove(row))
+                    {
+                        service.Delete(row.Id);
+                    }
                 });
         }
 
@@ -95,6 +104,22 @@ namespace MyApplication.Desktop.ViewModels
             {
                 this.selectedRow = value;
                 OnPropertyChanged(() => this.SelectedRow);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is loading.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is loading; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsLoading
+        {
+            get { return this.isLoading; }
+            set
+            {
+                this.isLoading = value;
+                OnPropertyChanged(() => this.IsLoading);
             }
         }
 

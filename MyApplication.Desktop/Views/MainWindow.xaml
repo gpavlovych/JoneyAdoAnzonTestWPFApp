@@ -17,7 +17,6 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Window.Resources>
-        <localvm:EnumBooleanConverter x:Key="enumBooleanConverter"/>
         <Style x:Key="headerStyle" TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Background" Value="Transparent"/>
         </Style>
@@ -27,10 +26,12 @@
     </Window.Resources>
     <Grid Margin="15" Width="510">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <ListView Grid.Row="0" ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}">
+        <ProgressBar IsIndeterminate="True" IsEnabled="True" Height="15" Visibility="{Binding IsLoading, Converter={StaticResource booleanVisibilityConverter}}"></ProgressBar>
+        <ListView Grid.Row="1" ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}">
             <ListView.Resources>
                 <DataTemplate x:Key="RowHeaderTTC" DataType="{x:Type localvm:TTCRowViewModel}">
                     <TextBlock Text="{x:Static prop:Resources.TTCRowHeader}"/>
@@ -134,7 +135,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>

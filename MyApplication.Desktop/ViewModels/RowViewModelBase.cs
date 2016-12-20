@@ -14,22 +14,16 @@ namespace MyApplication.Desktop.ViewModels
     public abstract class RowViewModelBase: BindableBase
     {
         /// <summary>
-        /// The service
-        /// </summary>
-        private readonly IRowService service;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RowViewModelBase"/> class.
         /// </summary>
         /// <param name="row">The row.</param>
         protected RowViewModelBase(IRowService service, RowBase row)
         {
-            this.service = service;
             this.Row = row;
 
             this.SaveCommand = new DelegateCommand(() =>
             {
-                this.service.Update(this.Row);
+                service.Update(this.Row);
             });
         }
 

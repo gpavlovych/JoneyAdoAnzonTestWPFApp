@@ -161,6 +161,8 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Services\IRowService.cs" />
     <Compile Include="Services\Impl\RowService.cs" />
+    <Compile Include="ViewModels\BooleanVisibilityConverter.cs" />
+    <Compile Include="ViewModels\IContext.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -177,6 +179,7 @@
     <Compile Include="ViewModels\T3RbRowViewModel.cs" />
     <Compile Include="ViewModels\TTbCRowViewModel.cs" />
     <Compile Include="ViewModels\TTCRowViewModel.cs" />
+    <Compile Include="ViewModels\WpfContext.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
